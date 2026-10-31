@@ -1,0 +1,221 @@
+table Medidas
+	lineageTag: 8d07fb11-2922-4647-8eef-e22d29144807
+
+	measure 'Meta Total' = SUM(Metas[Valor da Meta])
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 1ec6b4a9-d551-4c57-832a-7786ddc85f56
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Atingimento da Meta (%)' = DIVIDE([Faturamento Total],[Meta Total],0)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 485242ce-630d-4a7b-9c6c-4e7c4b496849
+
+	measure 'Diferença Faturamento 2017 x 2018' = [Faturamento 2018] - [Faturamento 2017]
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: a8398346-32f6-48b0-b51f-1cbe3654ab58
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Faturamento 2017' = CALCULATE([Faturamento Total], DimAno[Ano] = 2017)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 37e3879c-58d6-4ab2-8773-0cac733bcf42
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Faturamento 2018' = CALCULATE([Faturamento Total], DimAno[Ano] = 2018)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 738d5718-6a04-4179-ab5f-6f40b1c7514f
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Faturamento Total' = ```
+			SUM(Vendas[Valor Venda]) 
+			```
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: a3b091fc-ab47-48f6-874b-049b4438b6da
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Participação por categoria (%)' =
+			
+			DIVIDE(
+			    [Faturamento Total],
+			    CALCULATE(
+			        [Faturamento Total],
+			        REMOVEFILTERS(DimCategoria)
+			    ),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: b51ec1d7-a755-4a26-8bd8-eb9e06af1994
+
+	measure 'Variação Faturamento 2017 x 2018 (%)' = DIVIDE([Faturamento 2018] - [Faturamento 2017], [Faturamento 2017], 0)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ac9c56ed-30fc-4777-aa79-fb8f965baa84
+
+	measure 'Diferença Atingimento da Meta' = [Meta Total] - [Faturamento Total]
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: d7b6976d-5add-469e-8010-4ee8f931f964
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Top 3 - Comparação dos Rankings' =
+			
+			VAR RankingPeriodo =
+			    SELECTCOLUMNS(
+			        TOPN(
+			            3,
+			            ALLSELECTED(Subcategoria[Subcategoria]),
+			            [Faturamento Total], DESC,
+			            Subcategoria[Subcategoria], ASC
+			        ),
+			        "Nome", Subcategoria[Subcategoria]
+			    )
+			
+			VAR Ranking2017 =
+			    SELECTCOLUMNS(
+			        TOPN(
+			            3,
+			            ALLSELECTED(Subcategoria[Subcategoria]),
+			            [Faturamento 2017], DESC,
+			            Subcategoria[Subcategoria], ASC
+			        ),
+			        "Nome", Subcategoria[Subcategoria]
+			    )
+			
+			VAR Ranking2018 =
+			    SELECTCOLUMNS(
+			        TOPN(
+			            3,
+			            ALLSELECTED(Subcategoria[Subcategoria]),
+			            [Faturamento 2018], DESC,
+			            Subcategoria[Subcategoria], ASC
+			        ),
+			        "Nome", Subcategoria[Subcategoria]
+			    )
+			
+			VAR QuantidadeComum2017 =
+			    COUNTROWS(
+			        INTERSECT(RankingPeriodo, Ranking2017)
+			    )
+			
+			VAR QuantidadeComum2018 =
+			    COUNTROWS(
+			        INTERSECT(RankingPeriodo, Ranking2018)
+			    )
+			
+			VAR Texto2017 =
+			    SWITCH(
+			        TRUE(),
+			        QuantidadeComum2017 = 3,
+			        "2017 - ✅ Top 3 subcategorias são as mesmas do período completo (2017 - mar/2019).",
+			
+			        "2017 - ⚠️ Apenas " & QuantidadeComum2017 &
+			        " de 3 " &
+			        IF(QuantidadeComum2017 = 1, "subcategoria corresponde", "subcategorias correspondem") &
+			        " ao Top 3 do período completo (2017 - mar/2019)."
+			    )
+			
+			VAR Texto2018 =
+			    SWITCH(
+			        TRUE(),
+			        QuantidadeComum2018 = 3,
+			        "2018 - ✅ Top 3 subcategorias são as mesmas do período completo (2017 - mar/2019).",
+			
+			        "2018 - ⚠️ Apenas " & QuantidadeComum2018 &
+			        " de 3 " &
+			        IF(QuantidadeComum2018 = 1, "subcategoria corresponde", "subcategorias correspondem") &
+			        " ao Top 3 do período completo (2017 - mar/2019)."
+			    )
+			RETURN
+			    IF(
+			        COUNTROWS(RankingPeriodo) < 3 ||
+			        COUNTROWS(Ranking2017) < 3 ||
+			        COUNTROWS(Ranking2018) < 3,
+			        "❌ Nenhuma das 3 subcategorias do Top 3 corresponde ao período completo (2017 - mar/2019).",
+			
+			        IF(
+			            QuantidadeComum2017 = 3 &&
+			            QuantidadeComum2018 = 3,
+			
+			            "✅ Os Top 3 de 2017 e 2018 são iguais ao Top 3 do período completo (2017 - mar/2019).",
+			
+			            Texto2017 & UNICHAR(10) & Texto2018
+			        )
+			    )
+		lineageTag: fed512e1-6fe4-4674-8c71-9d28e2ce3d5f
+
+	measure 'Faturamento até 16 Março' =
+			
+			VAR AnoSelecionado =
+			    SELECTEDVALUE(DimAno[Ano])
+			RETURN
+			    CALCULATE(
+			        [Faturamento Total],
+			        REMOVEFILTERS(Calendario),
+			        DATESBETWEEN(
+			            Calendario[Date],
+			            DATE(AnoSelecionado, 1, 1),
+			            DATE(AnoSelecionado, 3, 16)
+			        )
+			    )
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 6906463b-326c-49e4-8342-ae157a0104c6
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Participação por subcategoria (%)' =
+			
+			DIVIDE(
+			    [Faturamento Total],
+			    CALCULATE(
+			        [Faturamento Total],
+			        REMOVEFILTERS(Subcategoria),
+			        REMOVEFILTERS(DimCategoria)
+			    ),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 6ac56440-9798-4a5f-bd6e-2ffde248c5a1
+
+	measure 'Variação Representatividade Subcategoria (%)' =
+			
+			VAR Participacao2017 =
+			    CALCULATE(
+			        [Participação por subcategoria (%)],
+			        REMOVEFILTERS(DimAno),
+			        DimAno[Ano] = 2017
+			    )
+			
+			VAR Participacao2018 =
+			    CALCULATE(
+			        [Participação por subcategoria (%)],
+			        REMOVEFILTERS(DimAno),
+			        DimAno[Ano] = 2018
+			    )
+			
+			RETURN
+			    DIVIDE(
+			        Participacao2018 - Participacao2017,
+			        Participacao2017,
+			        0
+			    )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 59f19762-c5b8-4e9f-80c8-d8312295e676
+
+	partition Medidas = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Tipo Alterado",{{"Coluna 1", "Metas"}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Colunas Renomeadas",{"Metas"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

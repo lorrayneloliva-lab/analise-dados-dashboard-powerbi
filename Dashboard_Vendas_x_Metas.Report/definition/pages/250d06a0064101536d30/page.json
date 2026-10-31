@@ -1,0 +1,122 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "250d06a0064101536d30",
+  "displayName": "Evolução do Faturamento -  2017 x 2018",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "image": {
+            "image": {
+              "name": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Modelo de fundo para Dashboard.png'"
+                  }
+                }
+              },
+              "url": {
+                "expr": {
+                  "ResourcePackageItem": {
+                    "PackageName": "RegisteredResources",
+                    "PackageType": 1,
+                    "ItemName": "Modelo_de_fundo_para_Dashboard7527326905668432.png"
+                  }
+                }
+              },
+              "scaling": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Fill'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "a27e05233d6308ca8a29",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "bdce3514c38c16c65d00",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "3b3be56bd207260597b0",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "3c579e80875340645905",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "9a9481241669998a2624",
+      "type": "DataFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "499dd0cc37adc71a7b2a",
+      "type": "DataFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "3ccf2cc2e504611a08d8",
+      "type": "DataFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "91a952df0b960b1dbe16",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "07af5665394b57ccd7b5",
+      "type": "NoFilter"
+    },
+    {
+      "source": "8f40133b2777b628cd37",
+      "target": "3c579e80875340645905",
+      "type": "DataFilter"
+    },
+    {
+      "source": "df63e93b055cbd57c70c",
+      "target": "9a9481241669998a2624",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "14dda5580c4128300553",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "4c5845a3330bbbb521e6",
+      "type": "NoFilter"
+    },
+    {
+      "source": "66056125313d24dc76c2",
+      "target": "2aae99800a3e6ea7da1e",
+      "type": "NoFilter"
+    }
+  ]
+}
